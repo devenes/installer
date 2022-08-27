@@ -2,7 +2,10 @@ GREEN='\033[1;32m'
 RED='\033[1;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+DOCKER_COMPOSE_VERSION="2.10.2"
 TERRAFORM_VERSION="1.2.8"
+PACKER_VERSION="1.8.3"
+KIND_VERSION="0.11.1"
 
 function install_ansible() {
   echo -e "${YELLOW}Installing Ansible...${NC}"
@@ -13,8 +16,8 @@ function install_ansible() {
 }
 
 if ! [ -x "$(command -v ansible)" ]; then
-  echo -e "${RED}Ansible is not installed${NC}" >&2
-  install_ansible  
+  echo -e "${RED}Ansible is not installed.${NC}" >&2
+  install_ansible
 else 
   echo -e "${GREEN}Ansible is installed.${NC}"
   ansible=$(ansible --version)
@@ -37,14 +40,14 @@ function install_docker() {
     sudo apt-get update --yes
     sudo apt-get install -y docker-ce
     sudo usermod -aG docker $USER
-    sudo curl -L "https://github.com/docker/compose/releases/download/2.10.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
     sudo systemctl start docker
     sudo systemctl enable docker
 }
 
 if ! [ -x "$(command -v docker)" ]; then
-  echo -e "${RED}Docker is not installed${NC}" >&2
+  echo -e "${RED}Docker is not installed.${NC}" >&2
   install_docker
 else 
   echo -e "${GREEN}Docker is installed.${NC}"
@@ -64,7 +67,7 @@ function install_kubectl() {
 }
 
 if ! [ -x "$(command -v kubectl)" ]; then
-  echo -e "${RED}Kubectl is not installed${NC}" >&2
+  echo -e "${RED}Kubectl is not installed.${NC}" >&2
   install_kubectl
 else 
   echo -e "${GREEN}Kubectl is installed.${NC}"
@@ -82,7 +85,7 @@ function install_helm() {
 }
 
 if ! [ -x "$(command -v helm)" ]; then
-  echo -e "${RED}Helm is not installed${NC}" >&2
+  echo -e "${RED}Helm is not installed.${NC}" >&2
   install_helm
 else 
   echo -e "${GREEN}Helm is installed.${NC}"
@@ -93,17 +96,85 @@ fi
 function install_terraform() {
   echo -e "${YELLOW}Installing Terraform...${NC}"
   sudo apt-get install -y unzip
-  wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-  unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+  wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip
+  unzip terraform_$TERRAFORM_VERSION_linux_amd64.zip
   sudo mv terraform /usr/local/bin/
-  rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+  rm terraform_$TERRAFORM_VERSION_linux_amd64.zip
 }
 
 if ! [ -x "$(command -v terraform)" ]; then
-  echo -e "${RED}Terraform is not installed${NC}" >&2
+  echo -e "${RED}Terraform is not installed.${NC}" >&2
   install_terraform
 else 
   echo -e "${GREEN}Terraform is installed.${NC}"
   terraform=$(terraform version)
   echo -e "${GREEN}Terraform version: $terraform${NC}"
+fi
+
+function install_packer() {
+  echo -e "${YELLOW}Installing Packer...${NC}"
+  sudo apt-get install -y unzip
+  wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
+  unzip packer_${PACKER_VERSION}_linux_amd64.zip
+  sudo mv packer /usr/local/bin/
+  rm packer_${PACKER_VERSION}_linux_amd64.zip
+}
+
+if ! [ -x "$(command -v packer)" ]; then
+  echo -e "${RED}Packer is not installed.${NC}" >&2
+  install_packer
+else 
+  echo -e "${GREEN}Packer is installed.${NC}"
+  packer=$(packer version)
+  echo -e "${GREEN}Packer version: $packer${NC}"
+fi
+
+function install_kind() {
+  echo -e "${YELLOW}Installing Kind...${NC}"
+  curl -Lo ./kind https://kind.sigs.k8s.io/dl/v${KIND_VERSION}/kind-linux-amd64
+  chmod +x ./kind
+  sudo mv ./kind /usr/local/bin/
+}
+
+if ! [ -x "$(command -v kind)" ]; then
+  echo -e "${RED}Kind is not installed.${NC}" >&2
+  install_kind
+else 
+  echo -e "${GREEN}Kind is installed.${NC}"
+  kind=$(kind version)
+  echo -e "${GREEN}Kind version: $kind${NC}"
+fi
+
+function install_kubectx() {
+  echo -e "${YELLOW}Installing Kubectx...${NC}"
+  curl -Lo ./kubectx https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
+  chmod +x ./kubectx
+  sudo mv ./kubectx /usr/local/bin/
+}
+
+if ! [ -x "$(command -v kubectx)" ]; then
+  echo -e "${RED}Kubectx is not installed.${NC}" >&2
+  install_kubectx
+else 
+  echo -e "${GREEN}Kubectx is installed.${NC}"
+#   kubectx has not version flag  
+#   kubectx=$(kubectx --version)
+#   echo -e "${GREEN}Kubectx version: $kubectx${NC}"
+fi
+
+function install_kubens() {
+  echo -e "${YELLOW}Installing Kubens...${NC}"
+  curl -Lo ./kubens https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
+  chmod +x ./kubens
+  sudo mv ./kubens /usr/local/bin/
+}
+
+if ! [ -x "$(command -v kubens)" ]; then
+  echo -e "${RED}Kubens is not installed.${NC}" >&2
+  install_kubens
+else 
+#   kubens has not version flag  
+#   kubens=$(kubens --version)
+#   echo -e "${GREEN}Kubens version: $kubens${NC}"
+  echo -e "${GREEN}Kubens is installed.${NC}"
 fi
