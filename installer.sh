@@ -55,18 +55,50 @@ else
   echo -e "${GREEN}Docker version: $docker${NC}"
 fi
 
+function install_cri_dockerd() {
+    echo -e "${YELLOW}Installing CRI-Dockerd...${NC}"
+    git clone https://github.com/Mirantis/cri-dockerd.git
+    wget https://storage.googleapis.com/golang/getgo/installer_linux
+    chmod +x ./installer_linux
+    ./installer_linux
+    source ~/.bash_profile
+    cd cri-dockerd
+    mkdir bin
+    go build -o bin/cri-dockerd
+    mkdir -p /usr/local/bin
+    sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+    sudo cp -a packaging/systemd/* /etc/systemd/system
+    sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable cri-docker.service
+    sudo systemctl enable --now cri-docker.socket
+    sudo systemctl status cri-docker.socket | grep Active
+}
+
+if ! [ -x "$(command -v cri-dockerd)" ]; then
+  echo -e "${RED}CRI-Dockerd is not installed.${NC}" >&2
+  install_cri_dockerd
+else 
+  echo -e "${GREEN}CRI-Dockerd is installed.${NC}"
+  cridockerd=$(sudo cri-dockerd --version)
+  echo -e "${GREEN}CRI-Dockerd version: $cridockerd${NC}"
+fi
+
 function install_kubectl() {
   echo -e "${YELLOW}Installing Kubectl...${NC}"
   sudo apt-get update --yes
   sudo apt-get install -y apt-transport-https ca-certificates curl
+  sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
   echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
   sudo apt-get update --yes
+  sudo apt-get install -y kubectl
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 }
 
-if ! [ -x "$(command -v kubectl)" ]; then
+if [ "$(dpkg-query -W -f='${Status}' kubectl 2>/dev/null | grep -c "ok installed")" -eq 0 ]; then
   echo -e "${RED}Kubectl is not installed.${NC}" >&2
   install_kubectl
 else 
@@ -96,10 +128,10 @@ fi
 function install_terraform() {
   echo -e "${YELLOW}Installing Terraform...${NC}"
   sudo apt-get install -y unzip
-  wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip
-  unzip terraform_$TERRAFORM_VERSION_linux_amd64.zip
+  wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+  unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
   sudo mv terraform /usr/local/bin/
-  rm terraform_$TERRAFORM_VERSION_linux_amd64.zip
+  rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 }
 
 if ! [ -x "$(command -v terraform)" ]; then
@@ -177,4 +209,22 @@ else
 #   kubens=$(kubens --version)
 #   echo -e "${GREEN}Kubens version: $kubens${NC}"
   echo -e "${GREEN}Kubens is installed.${NC}"
+fi
+
+function install_minikube() {
+  echo -e "${YELLOW}Installing Minikube...${NC}"
+  sudo apt-get install -y conntrack
+  sudo curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+  sudo dpkg -i minikube_latest_amd64.deb
+  rm minikube_latest_amd64.deb
+}
+
+if ! [ -x "$(command -v minikube)" ]; then
+  echo -e "${RED}Minikube is not installed.${NC}" >&2
+  install_minikube
+else 
+  echo -e "${GREEN}Minikube is installed.${NC}"
+  minikube=$(minikube version)
+  echo -e "${GREEN}Minikube version: $minikube${NC}\n"
+  echo -e "${GREEN}$(minikube status)"
 fi
