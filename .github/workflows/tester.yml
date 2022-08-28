@@ -22,20 +22,25 @@ jobs:
 
       - name: Run Before Script
         run: |
+          echo ${{ github.ref }}
+          echo ${{ github.sha }}
+          echo ${{ github.event_name }}
           sudo apt update -y
           sudo apt upgrade -y
           sudo apt -y remove needrestart
 
       - name: Run Installer Script
         run: |
-          echo ${{ github.ref }}
-          echo ${{ github.sha }}
-          echo ${{ github.event_name }}
           echo "[+] Running the installer script..."
           sudo su 
-          sudo bash ./installer.sh
+          bash ./installer.sh
 
       - name: Installer script result
         run: |
-          echo "[+] Installer script result:"
+          echo "[+] The result of the installer script..."
           bash ./installer.sh
+
+      - name: Run After Script
+        run: |
+          echo "[+] Running the after script..."
+          bash ./tester.sh
