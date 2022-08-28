@@ -296,8 +296,12 @@ fi
 
 function install_td_agent() {
   echo -e "${YELLOW}Installing td-agent...${NC}"
+  wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+  sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
   curl -fsSL https://toolbelt.treasuredata.com/sh/install-ubuntu-focal-td-agent4.sh | sh
   sudo systemctl start td-agent.service
+  [ ! -e ./libssl1.1_1.1.1f-1ubuntu2_amd64.deb ] || rm ./libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+  [ ! -e ./td-agent-* ] || rm ./td-agent-*
 }
 
 if ! [ -x "$(command -v sudo systemctl status td-agent)" ]; then
@@ -305,6 +309,6 @@ if ! [ -x "$(command -v sudo systemctl status td-agent)" ]; then
   install_td_agent
 else 
   echo -e "${GREEN}td-agent is installed.${NC}"
-  # td_agent=$(td-agent --version)
-  # echo -e "${GREEN}td-agent version: $td_agent${NC}"
+  td_agent=$(td-agent --version)
+  echo -e "${GREEN}td-agent version: $td_agent${NC}"
 fi
