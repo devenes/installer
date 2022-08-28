@@ -116,6 +116,6 @@ if ! [ -x "$(command -v sudo systemctl status td-agent)" ]; then
   echo -e "${RED}td-agent is not installed.${NC}" >&2
 else 
   echo -e "${GREEN}td-agent is installed.${NC}"
-  # td_agent=$(td-agent --version)
-  # echo -e "${GREEN}td-agent version: $td_agent${NC}"
+  td_agent=$(td-agent --version)
+  echo -e "${GREEN}td-agent version: $td_agent${NC}"
 fi
