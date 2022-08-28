@@ -22,8 +22,8 @@ jobs:
 
       - name: Run Before Script
         run: |
-          sudo apt update --yes
-          sudo apt upgrade --yes
+          sudo apt update -y
+          sudo apt upgrade -y
           sudo apt -y remove needrestart
 
       - name: Run Installer Script
@@ -32,6 +32,7 @@ jobs:
           echo ${{ github.sha }}
           echo ${{ github.event_name }}
           echo "[+] Running the installer script..."
+          sudo su 
           sudo bash ./installer.sh
 
       - name: Installer script result
