@@ -20,20 +20,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Run Before Script
+        run: |
+          sudo apt update --yes
+          sudo apt upgrade --yes
+          sudo apt -y remove needrestart
+
       - name: Run Installer Script
         run: |
           echo ${{ github.ref }}
           echo ${{ github.sha }}
           echo ${{ github.event_name }}
           echo "[+] Running the installer script..."
-          # chmod +x ./installer.sh
           sudo bash ./installer.sh
-
-      # - name: Push changes
-      #   if: github.ref == 'refs/heads/master'
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Installer script result
         run: |
