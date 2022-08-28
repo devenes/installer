@@ -256,7 +256,7 @@ if ! [ -x "$(command -v minikube)" ]; then
   install_minikube
 else
   echo -e "${GREEN}Minikube is installed.${NC}"
-  minikube=$(minikube version)
+  minikube=$(minikube version | head -1)
   echo -e "${GREEN}Minikube version: $minikube${NC}\n"
   echo -e "${GREEN}$(minikube status)"
 fi
