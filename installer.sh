@@ -39,7 +39,6 @@ function install_docker() {
         "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
         $(lsb_release -cs) \
         stable"
-    sudo apt-get update --yes
     sudo apt-get install -y docker-ce
     sudo usermod -aG docker $USER
     sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -59,11 +58,12 @@ fi
 
 function install_cri_dockerd() {
     echo -e "${YELLOW}Installing CRI-Dockerd...${NC}"
-    git clone https://github.com/Mirantis/cri-dockerd.git
     wget https://storage.googleapis.com/golang/getgo/installer_linux
     chmod +x ./installer_linux
     ./installer_linux
-    source ~/.bash_profile
+    # source ~/.bash_profile
+    sudo source root/.bash_profile
+    git clone https://github.com/Mirantis/cri-dockerd.git
     cd cri-dockerd
     mkdir bin
     go build -o bin/cri-dockerd
