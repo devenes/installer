@@ -22,7 +22,7 @@ function install_ansible() {
 if ! [ -x "$(command -v ansible)" ]; then
   echo -e "${RED}Ansible is not installed.${NC}" >&2
   install_ansible
-else 
+else
   echo -e "${GREEN}Ansible is installed.${NC}"
   ansible=$(ansible --version | grep "core" | head -1)
   echo -e "${GREEN}Ansible version: $ansible${NC}"
@@ -52,7 +52,7 @@ function install_docker() {
 if ! [ -x "$(command -v docker)" ]; then
   echo -e "${RED}Docker is not installed.${NC}" >&2
   install_docker
-else 
+else
   echo -e "${GREEN}Docker is installed.${NC}"
   docker=$(docker --version)
   echo -e "${GREEN}Docker version: $docker${NC}"
@@ -108,7 +108,7 @@ function install_cri_dockerd() {
 if ! [ -x "$(command -v cri-dockerd --version)" ]; then
   echo -e "${RED}CRI-Dockerd is not installed.${NC}" >&2
   install_cri_dockerd
-else 
+else
   # echo -e "${GREEN}CRI-Dockerd is installed. CRI-Dockerd version:"
   printf "${GREEN}CRI-Dockerd is installed. CRI-Dockerd version: "
   echo "$(cri-dockerd --version)"
@@ -254,7 +254,7 @@ function install_minikube() {
 if ! [ -x "$(command -v minikube)" ]; then
   echo -e "${RED}Minikube is not installed.${NC}" >&2
   install_minikube
-else 
+else
   echo -e "${GREEN}Minikube is installed.${NC}"
   minikube=$(minikube version)
   echo -e "${GREEN}Minikube version: $minikube${NC}\n"
@@ -271,7 +271,7 @@ function install_crictl() {
 if ! [ -x "$(command -v crictl)" ]; then
   echo -e "${RED}Crictl is not installed.${NC}" >&2
   install_crictl
-else 
+else
   echo -e "${GREEN}Crictl is installed.${NC}"
   crictl=$(crictl --version)
   echo -e "${GREEN}Crictl version: $crictl${NC}"
@@ -288,7 +288,7 @@ function install_vagrant() {
 if ! [ -x "$(command -v vagrant)" ]; then
   echo -e "${RED}Vagrant is not installed.${NC}" >&2
   install_vagrant
-else 
+else
   echo -e "${GREEN}Vagrant is installed.${NC}"
   vagrant=$(vagrant --version)
   echo -e "${GREEN}Vagrant version: $vagrant${NC}"
@@ -299,7 +299,6 @@ function install_td_agent() {
   wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
   sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
   sudo curl -fsSL https://toolbelt.treasuredata.com/sh/install-ubuntu-focal-td-agent4.sh | sh
-  apt list --upgradable
   apt --fix-broken install
   sudo systemctl start td-agent.service
   [ ! -e ./libssl1.1_1.1.1f-1ubuntu2_amd64.deb ] || rm ./libssl1.1_1.1.1f-1ubuntu2_amd64.deb
@@ -309,8 +308,41 @@ function install_td_agent() {
 if ! [ -x "$(command -v td-agent --version)" ]; then
   echo -e "${RED}td-agent is not installed.${NC}" >&2
   install_td_agent
-else 
+else
   echo -e "${GREEN}td-agent is installed.${NC}"
   td_agent=$(td-agent --version)
   echo -e "${GREEN}td-agent version: $td_agent${NC}"
+fi
+
+function install_crane() {
+  echo -e "${YELLOW}Installing Crane...${NC}"
+  wget https://github.com/tsuru/crane/releases/download/1.0.0/crane-1.0.0-linux_amd64.tar.gz
+  tar -xvzf crane-1.0.0-linux_amd64.tar.gz
+  sudo mv crane /usr/local/bin/
+  rm crane-1.0.0-linux_amd64.tar.gz
+}
+
+if ! [ -x "$(command -v crane)" ]; then
+  echo -e "${RED}Crane is not installed.${NC}" >&2
+  install_crane
+else
+  echo -e "${GREEN}Crane is installed.${NC}"
+  crane=$(crane version)
+  echo -e "${GREEN}Crane version: $crane${NC}"
+fi
+
+function install_argocd() {
+  echo -e "${YELLOW}Installing ArgoCD...${NC}"
+  wget https://github.com/argoproj/argo-cd/releases/download/v2.2.5/argocd-linux-amd64 -O argocd
+  chmod +x argocd
+  sudo mv argocd /usr/local/bin/
+}
+
+if ! [ -x "$(command -v argocd)" ]; then
+  echo -e "${RED}ArgoCD is not installed.${NC}" >&2
+  install_argocd
+else
+  echo -e "${GREEN}ArgoCD is installed.${NC}"
+  argocd=$(argocd version | head -1 | awk '{print $2}')
+  echo -e "${GREEN}ArgoCD version: $argocd${NC}"
 fi
