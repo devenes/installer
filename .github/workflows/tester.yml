@@ -1,0 +1,41 @@
+name: Shell Scripts Testing
+
+on:
+  pull_request:
+    branches:
+      - master
+
+  push:
+    branches:
+      - master
+      - test
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run Installer Script
+        run: |
+          echo ${{ github.ref }}
+          echo ${{ github.sha }}
+          echo ${{ github.event_name }}
+          echo "[+] Running the installer script..."
+          chmod +x ./installer.sh
+          sudo ./installer.sh
+
+      # - name: Push changes
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Installer script result
+        run: |
+          echo "[+] Installer script result:"
+          ./installer.sh
