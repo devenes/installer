@@ -7,6 +7,7 @@ TERRAFORM_VERSION="1.2.8"
 PACKER_VERSION="1.8.3"
 KIND_VERSION="0.11.1"
 CRICTL_VERSION="v1.24.2"
+CRI_LATEST_VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
 
 function install_ansible() {
   echo -e "${YELLOW}Installing Ansible...${NC}"
@@ -28,23 +29,23 @@ fi
 
 function install_docker() {
   echo -e "${YELLOW}Installing Docker...${NC}"
-    sudo apt-get update --yes
-    sudo apt install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository -y \
-        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-        $(lsb_release -cs) \
-        stable"
-    sudo apt-get install -y docker-ce
-    sudo usermod -aG docker $USER
-    sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    sudo systemctl start docker
-    sudo systemctl enable docker
+  sudo apt-get update --yes
+  sudo apt install -y \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      software-properties-common
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo add-apt-repository -y \
+      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) \
+      stable"
+  sudo apt-get install -y docker-ce
+  sudo usermod -aG docker $USER
+  sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  sudo systemctl start docker
+  sudo systemctl enable docker
 }
 
 if ! [ -x "$(command -v docker)" ]; then
@@ -57,27 +58,52 @@ else
 fi
 
 function install_cri_dockerd() {
-    echo -e "${YELLOW}Installing CRI-Dockerd...${NC}"
-    wget https://storage.googleapis.com/golang/getgo/installer_linux
-    chmod +x ./installer_linux
-    ./installer_linux
-    # source ~/.bash_profile
-    sudo source root/.bash_profile
-    git clone https://github.com/Mirantis/cri-dockerd.git
-    cd cri-dockerd
-    mkdir bin
-    go build -o bin/cri-dockerd
-    mkdir -p /usr/local/bin
-    sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
-    sudo cp -a packaging/systemd/* /etc/systemd/system
-    sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
-    sudo systemctl daemon-reload
-    sudo systemctl enable cri-docker.service
-    sudo systemctl enable --now cri-docker.socket
-    sudo systemctl status cri-docker.socket | grep Active
+  echo -e "${YELLOW}Installing CRI-Dockerd...${NC}"
+  sudo apt update
+  sudo apt install -y git wget curl
+
+  if [ $(dpkg --print-architecture) = "amd64" ]; then
+      wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRI_LATEST_VER}/cri-dockerd-${CRI_LATEST_VER}.amd64.tgz
+      tar xvf cri-dockerd-${CRI_LATEST_VER}.amd64.tgz    
+      sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
+      rm -rf cri-dockerd-${CRI_LATEST_VER}.amd64.tgz cri-dockerd
+  elif [ $(dpkg --print-architecture) = "arm64" ]; then   
+      wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRI_LATEST_VER}/cri-dockerd-${CRI_LATEST_VER}.arm64.tgz
+      tar xvf cri-dockerd-${CRI_LATEST_VER}.arm64.tgz
+      sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
+      rm -rf cri-dockerd-${CRI_LATEST_VER}.arm64.tgz cri-dockerd
+  else
+      echo "Unsupported architecture"
+      exit 1
+  fi
+
+  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
+  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
+  sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
+  sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+  sudo systemctl daemon-reload
+  sudo systemctl enable cri-docker.service
+  sudo systemctl enable --now cri-docker.socket
+  # wget https://storage.googleapis.com/golang/getgo/installer_linux
+  # chmod +x ./installer_linux
+  # ./installer_linux
+  # # source ~/.bash_profile
+  # sudo source root/.bash_profile
+  # git clone https://github.com/Mirantis/cri-dockerd.git
+  # cd cri-dockerd
+  # mkdir bin
+  # go build -o bin/cri-dockerd
+  # mkdir -p /usr/local/bin
+  # sudo install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+  # sudo cp -a packaging/systemd/* /etc/systemd/system
+  # sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+  # sudo systemctl daemon-reload
+  # sudo systemctl enable cri-docker.service
+  # sudo systemctl enable --now cri-docker.socket
+  # sudo systemctl status cri-docker.socket | grep Active
 }
 
-if ! [ -x "$(command -v systemctl status cri-docker.socket)" ]; then
+if ! [ -x "$(command -v cri-dockerd --version)" ]; then
   echo -e "${RED}CRI-Dockerd is not installed.${NC}" >&2
   install_cri_dockerd
 else 
