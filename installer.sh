@@ -22,7 +22,7 @@ if ! [ -x "$(command -v ansible)" ]; then
   install_ansible
 else 
   echo -e "${GREEN}Ansible is installed.${NC}"
-  ansible=$(ansible --version)
+  ansible=$(ansible --version | grep "core")
   echo -e "${GREEN}Ansible version: $ansible${NC}"
 fi
 
