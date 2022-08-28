@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  Installer Test:
     runs-on: ubuntu-latest
 
     steps:
