@@ -6,9 +6,11 @@ DOCKER_COMPOSE_VERSION="2.10.2"
 TERRAFORM_VERSION="1.2.8"
 PACKER_VERSION="1.8.3"
 KIND_VERSION="0.11.1"
+CRICTL_VERSION="v1.24.2"
 
 function install_ansible() {
   echo -e "${YELLOW}Installing Ansible...${NC}"
+  sudo apt -y remove needrestart
   sudo apt update --yes
   sudo apt install software-properties-common -yes
   sudo apt-add-repository --yes --update ppa:ansible/ansible
@@ -79,9 +81,11 @@ if ! [ -x "$(command -v cri-dockerd)" ]; then
   echo -e "${RED}CRI-Dockerd is not installed.${NC}" >&2
   install_cri_dockerd
 else 
-  echo -e "${GREEN}CRI-Dockerd is installed.${NC}"
-  cridockerd=$(sudo cri-dockerd --version)
-  echo -e "${GREEN}CRI-Dockerd version: $cridockerd${NC}"
+  # echo -e "${GREEN}CRI-Dockerd is installed. CRI-Dockerd version:"
+  printf "${GREEN}CRI-Dockerd is installed. CRI-Dockerd version: "
+  echo "$(cri-dockerd --version)"
+  # cridockerd=$(sudo cri-dockerd --version)
+  # echo "${GREEN}CRI-Dockerd version: $cridockerd${NC}"
 fi
 
 function install_kubectl() {
@@ -227,4 +231,20 @@ else
   minikube=$(minikube version)
   echo -e "${GREEN}Minikube version: $minikube${NC}\n"
   echo -e "${GREEN}$(minikube status)"
+fi
+
+function install_crictl() {
+  echo -e "${YELLOW}Installing Crictl...${NC}"
+  wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$CRICTL_VERSION/crictl-$CRICTL_VERSION-linux-amd64.tar.gz
+  sudo tar zxvf crictl-$CRICTL_VERSION-linux-amd64.tar.gz -C /usr/local/bin
+  rm -f crictl-$CRICTL_VERSION-linux-amd64.tar.gz
+}
+
+if ! [ -x "$(command -v crictl)" ]; then
+  echo -e "${RED}Crictl is not installed.${NC}" >&2
+  install_crictl
+else 
+  echo -e "${GREEN}Crictl is installed.${NC}"
+  crictl=$(crictl --version)
+  echo -e "${GREEN}Crictl version: $crictl${NC}"
 fi
