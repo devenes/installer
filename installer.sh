@@ -101,6 +101,7 @@ function install_cri_dockerd() {
   # sudo systemctl enable cri-docker.service
   # sudo systemctl enable --now cri-docker.socket
   # sudo systemctl status cri-docker.socket | grep Active
+  [ ! -e ./cri-dockerd* ] || sudo rm -f -d ./cri-dockerd*
 }
 
 if ! [ -x "$(command -v cri-dockerd --version)" ]; then
@@ -123,7 +124,6 @@ function install_kubectl() {
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
   echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-  sudo apt-get update --yes
   sudo apt-get install -y kubectl
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 }
@@ -131,7 +131,7 @@ function install_kubectl() {
 if [ "$(dpkg-query -W -f='${Status}' kubectl 2>/dev/null | grep -c "ok installed")" -eq 0 ]; then
   echo -e "${RED}Kubectl is not installed.${NC}" >&2
   install_kubectl
-else 
+else
   echo -e "${GREEN}Kubectl is installed.${NC}"
   kubectl=$(kubectl version --client --short)
   echo -e "${GREEN}Kubectl version: $kubectl${NC}"
@@ -149,7 +149,7 @@ function install_helm() {
 if ! [ -x "$(command -v helm)" ]; then
   echo -e "${RED}Helm is not installed.${NC}" >&2
   install_helm
-else 
+else
   echo -e "${GREEN}Helm is installed.${NC}"
   helm=$(helm version --short)
   echo -e "${GREEN}Helm version: $helm${NC}"
@@ -167,9 +167,9 @@ function install_terraform() {
 if ! [ -x "$(command -v terraform)" ]; then
   echo -e "${RED}Terraform is not installed.${NC}" >&2
   install_terraform
-else 
+else
   echo -e "${GREEN}Terraform is installed.${NC}"
-  terraform=$(terraform version)
+  terraform=$(terraform version | head -1)
   echo -e "${GREEN}Terraform version: $terraform${NC}"
 fi
 
@@ -185,7 +185,7 @@ function install_packer() {
 if ! [ -x "$(command -v packer)" ]; then
   echo -e "${RED}Packer is not installed.${NC}" >&2
   install_packer
-else 
+else
   echo -e "${GREEN}Packer is installed.${NC}"
   packer=$(packer version)
   echo -e "${GREEN}Packer version: $packer${NC}"
@@ -201,7 +201,7 @@ function install_kind() {
 if ! [ -x "$(command -v kind)" ]; then
   echo -e "${RED}Kind is not installed.${NC}" >&2
   install_kind
-else 
+else
   echo -e "${GREEN}Kind is installed.${NC}"
   kind=$(kind version)
   echo -e "${GREEN}Kind version: $kind${NC}"
@@ -217,7 +217,7 @@ function install_kubectx() {
 if ! [ -x "$(command -v kubectx)" ]; then
   echo -e "${RED}Kubectx is not installed.${NC}" >&2
   install_kubectx
-else 
+else
   echo -e "${GREEN}Kubectx is installed.${NC}"
 #   kubectx has not version flag  
 #   kubectx=$(kubectx --version)
@@ -234,7 +234,7 @@ function install_kubens() {
 if ! [ -x "$(command -v kubens)" ]; then
   echo -e "${RED}Kubens is not installed.${NC}" >&2
   install_kubens
-else 
+else
 #   kubens has not version flag  
 #   kubens=$(kubens --version)
 #   echo -e "${GREEN}Kubens version: $kubens${NC}"
