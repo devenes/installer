@@ -8,6 +8,7 @@ PACKER_VERSION="1.8.3"
 KIND_VERSION="0.11.1"
 CRICTL_VERSION="v1.24.2"
 CRI_LATEST_VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
+VAGRANT_VERSION="2.2.19"
 
 function install_ansible() {
   echo -e "${YELLOW}Installing Ansible...${NC}"
@@ -274,4 +275,36 @@ else
   echo -e "${GREEN}Crictl is installed.${NC}"
   crictl=$(crictl --version)
   echo -e "${GREEN}Crictl version: $crictl${NC}"
+fi
+
+function install_vagrant() {
+  echo -e "${YELLOW}Installing Vagrant...${NC}"
+  sudo apt-get install -y virtualbox
+  wget https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
+  sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
+  rm vagrant_${VAGRANT_VERSION}_x86_64.deb
+}
+
+if ! [ -x "$(command -v vagrant)" ]; then
+  echo -e "${RED}Vagrant is not installed.${NC}" >&2
+  install_vagrant
+else 
+  echo -e "${GREEN}Vagrant is installed.${NC}"
+  vagrant=$(vagrant --version)
+  echo -e "${GREEN}Vagrant version: $vagrant${NC}"
+fi
+
+function install_td_agent() {
+  echo -e "${YELLOW}Installing td-agent...${NC}"
+  curl -fsSL https://toolbelt.treasuredata.com/sh/install-ubuntu-focal-td-agent4.sh | sh
+  sudo systemctl start td-agent.service
+}
+
+if ! [ -x "$(command -v sudo systemctl status td-agent)" ]; then
+  echo -e "${RED}td-agent is not installed.${NC}" >&2
+  install_td_agent
+else 
+  echo -e "${GREEN}td-agent is installed.${NC}"
+  # td_agent=$(td-agent --version)
+  # echo -e "${GREEN}td-agent version: $td_agent${NC}"
 fi
