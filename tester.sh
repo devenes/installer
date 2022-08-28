@@ -112,10 +112,26 @@ else
   echo -e "${GREEN}Vagrant version: $vagrant${NC}"
 fi
 
-if ! [ -x "$(command -v sudo systemctl status td-agent)" ]; then
+if ! [ -x "$(command -v td-agent --version)" ]; then
   echo -e "${RED}td-agent is not installed.${NC}" >&2
 else 
   echo -e "${GREEN}td-agent is installed.${NC}"
   td_agent=$(td-agent --version)
   echo -e "${GREEN}td-agent version: $td_agent${NC}"
+fi
+
+if ! [ -x "$(command -v crane)" ]; then
+  echo -e "${RED}Crane is not installed.${NC}" >&2
+else
+  echo -e "${GREEN}Crane is installed.${NC}"
+  crane=$(crane version)
+  echo -e "${GREEN}Crane version: $crane${NC}"
+fi
+
+if ! [ -x "$(command -v argocd)" ]; then
+  echo -e "${RED}ArgoCD is not installed.${NC}" >&2
+else
+  echo -e "${GREEN}ArgoCD is installed.${NC}"
+  argocd=$(argocd version | head -1 | awk '{print $2}')
+  echo -e "${GREEN}ArgoCD version: $argocd${NC}"
 fi
