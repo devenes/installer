@@ -26,8 +26,8 @@ jobs:
           echo ${{ github.sha }}
           echo ${{ github.event_name }}
           echo "[+] Running the installer script..."
-          chmod +x ./installer.sh
-          sudo ./installer.sh
+          # chmod +x ./installer.sh
+          sudo bash ./installer.sh
 
       # - name: Push changes
       #   if: github.ref == 'refs/heads/master'
@@ -38,4 +38,4 @@ jobs:
       - name: Installer script result
         run: |
           echo "[+] Installer script result:"
-          ./installer.sh
+          bash ./installer.sh
