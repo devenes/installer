@@ -11,10 +11,10 @@ CRICTL_VERSION="v1.24.2"
 function install_ansible() {
   echo -e "${YELLOW}Installing Ansible...${NC}"
   sudo apt -y remove needrestart
-  sudo apt update --yes
-  sudo apt install software-properties-common -yes
-  sudo apt-add-repository --yes --update ppa:ansible/ansible
-  sudo apt install ansible --yes
+  sudo apt update -y
+  sudo apt install software-properties-common -y
+  sudo apt-add-repository -y --update ppa:ansible/ansible
+  sudo apt install ansible -y
 }
 
 if ! [ -x "$(command -v ansible)" ]; then
@@ -77,7 +77,7 @@ function install_cri_dockerd() {
     sudo systemctl status cri-docker.socket | grep Active
 }
 
-if ! [ -x "$(command -v cri-dockerd)" ]; then
+if ! [ -x "$(command -v systemctl status cri-docker.socket)" ]; then
   echo -e "${RED}CRI-Dockerd is not installed.${NC}" >&2
   install_cri_dockerd
 else 
