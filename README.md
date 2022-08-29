@@ -1,36 +1,25 @@
 <div align="center" id="top"> 
-  <img src="./.github/app.gif" alt="Installer" />
+  <img src="./.github/img.webp" alt="Installer" />
 
-  &#xa0;
-
-  <!-- <a href="https://installer.netlify.app">Demo</a> -->
 </div>
 
-<h1 align="center">Installer</h1>
+<h1 align="center">DevOps Installer</h1>
 
 <p align="center">
   <img alt="Github top language" src="https://img.shields.io/github/languages/top/devenes/installer?color=56BEB8">
-
   <img alt="Github language count" src="https://img.shields.io/github/languages/count/devenes/installer?color=56BEB8">
-
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/devenes/installer?color=56BEB8">
-
   <img alt="License" src="https://img.shields.io/github/license/devenes/installer?color=56BEB8">
-
-  <!-- <img alt="Github issues" src="https://img.shields.io/github/issues/devenes/installer?color=56BEB8" /> -->
-
-  <!-- <img alt="Github forks" src="https://img.shields.io/github/forks/devenes/installer?color=56BEB8" /> -->
-
-  <!-- <img alt="Github stars" src="https://img.shields.io/github/stars/devenes/installer?color=56BEB8" /> -->
+  <!-- <img alt="Github issues" src="https://img.shields.io/github/issues/devenes/installer?color=56BEB8" />
+  <img alt="Github forks" src="https://img.shields.io/github/forks/devenes/installer?color=56BEB8" /> -->
+  <img alt="Github stars" src="https://img.shields.io/github/stars/devenes/installer?color=56BEB8" />
 </p>
 
-<!-- Status -->
-
-<!-- <h4 align="center"> 
+<h4 align="center">
 	🚧  Installer 🚀 Under construction...  🚧
-</h4> 
+</h4>
 
-<hr> -->
+<hr>
 
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0; 
@@ -44,52 +33,45 @@
 
 <br>
 
-## :dart: About ##
+## :dart: About
 
-Describe your project
+Installer is an open source project that is developed by [Devenes](http://www.github.com/devenes) to download and install packages and applications such as ansible, docker, cri-dockerd, kubectl, helm, terraform, packer, kind, kubectx, kubens, minikube, crictl, vagrant, td-agent, crane, argocd for using on test environments and production environments, Ubuntu Server on [Microsoft Azure](https://azure.microsoft.com/en-us/) and Amazon Linux EC2 instance of [AWS](https://aws.amazon.com/) cloud infrastructures.
 
-## :sparkles: Features ##
+## :sparkles: Features
 
-:heavy_check_mark: Feature 1;\
-:heavy_check_mark: Feature 2;\
-:heavy_check_mark: Feature 3;
+:heavy_check_mark: Install package\
+:heavy_check_mark: Test the installation\
+:heavy_check_mark: Support for multiple operating systems
 
-## :rocket: Technologies ##
+## :rocket: Technologies
 
 The following tools were used in this project:
 
-- [Expo](https://expo.io/)
-- [Node.js](https://nodejs.org/en/)
-- [React](https://pt-br.reactjs.org/)
-- [React Native](https://reactnative.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
+- [Bash](https://www.gnu.org/software/bash/)
 
-## :white_check_mark: Requirements ##
+## :white_check_mark: Requirements
 
-Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) and [Node](https://nodejs.org/en/) installed.
+Before starting :checkered_flag:, you need to have Ubuntu or Amazon Linux operating system.
 
-## :checkered_flag: Starting ##
+## :checkered_flag: Starting
 
 ```bash
 # Clone this project
-$ git clone https://github.com/devenes/installer
+git clone https://github.com/devenes/installer
 
 # Access
-$ cd installer
+cd installer
 
-# Install dependencies
-$ yarn
+# Install packages
+sudo bash installer.sh
 
-# Run the project
-$ yarn start
-
-# The server will initialize in the <http://localhost:3000>
+# Test the installation
+bash installer.sh
 ```
 
-## :memo: License ##
+## :memo: License
 
-This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.
-
+This project is under license from Apache. For more details, see the [LICENSE](LICENSE.md) file.
 
 Made with :heart: by <a href="https://github.com/devenes" target="_blank">devenes</a>
 
