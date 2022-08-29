@@ -1,4 +1,4 @@
-name: Shell Scripts Testing
+name: Shell Script Testing
 
 on:
   pull_request:
@@ -34,26 +34,19 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt upgrade -y
-          sudo apt -y remove needrestart
+          sudo apt remove needrestart -y
 
       - name: Run Installer Script
         run: |
           echo "[+] Running the installer script..."
-          sudo su 
-          bash ./tester.sh
-
-      # - name: Run Installer Script
-      #   run: |
-      #     echo "[+] Running the installer script..."
-      #     sudo su
-      #     bash ./installer.sh
-
-      # - name: Installer script result
-      #   run: |
-      #     echo "[+] The result of the installer script..."
-      #     bash ./installer.sh
+          sudo bash ./installer.sh
 
       - name: Run After Script
         run: |
           echo "[+] Running the after script..."
-          bash ./tester.sh
+          sudo bash ./installer.sh
+
+      - name: Run After Script Test
+        run: |
+          echo "[+] Running the after script..."
+          bash ./installer.sh
