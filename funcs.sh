@@ -154,7 +154,7 @@ function install_minikube() {
   sudo apt-get install -y conntrack
   sudo curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
   sudo dpkg -i minikube_latest_amd64.deb
-  rm minikube_latest_amd64.deb
+  rm -f minikube_latest_amd64.deb
 }
 
 function install_crictl() {
