@@ -1,3 +1,4 @@
+#!/bin/bash
 source ./funcs.sh
 
 packages=(
@@ -21,15 +22,15 @@ packages=(
 
 function check_command {
   if ! [ -x "$(command -v $1)" ]; then
-    echo -e "${RED}[-] $1 is not installed.${NC}" >&2
-    install_"$1"
+      echo -e "${RED}[-] $1 is not installed.${NC}" >&2
+      install_"$1"
         if ! [ -x "$(command -v $1)" ]; then
           echo -e "${RED}[-] $1 could not be installed.${NC}" >&2
         else
           echo -e "${GREEN}[+] $1 is installed.${NC}"
         fi
   else
-    echo -e "${GREEN}[+] $1 is installed.${NC}"
+     echo -e "${GREEN}[+] $1 is installed.${NC}"
   fi
 }
 
