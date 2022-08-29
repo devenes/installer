@@ -180,8 +180,8 @@ function install_td-agent() {
   sudo apt --fix-broken install
   sudo apt upgrade -y
   sudo systemctl start td-agent.service
-  [ ! -e ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb ] || rm ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-  [ ! -e ./td-agent-* ] || rm ./td-agent-*
+  [ ! -e ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb ] || rm -f ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+  [ ! -e ./td-agent-* ] || rm -f ./td-agent-*
 }
 
 function install_crane() {
