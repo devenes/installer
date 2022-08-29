@@ -4,11 +4,15 @@ on:
   pull_request:
     branches:
       - master
+      - develop
+      - test
 
   push:
     branches:
       - master
       - test
+      - v1
+      - v2
 
   workflow_dispatch:
 
@@ -25,6 +29,9 @@ jobs:
           echo ${{ github.ref }}
           echo ${{ github.sha }}
           echo ${{ github.event_name }}
+
+      - name: Update Package List
+        run: |
           sudo apt update -y
           sudo apt upgrade -y
           sudo apt -y remove needrestart
@@ -33,12 +40,18 @@ jobs:
         run: |
           echo "[+] Running the installer script..."
           sudo su 
-          bash ./installer.sh
+          bash ./tester.sh
 
-      - name: Installer script result
-        run: |
-          echo "[+] The result of the installer script..."
-          bash ./installer.sh
+      # - name: Run Installer Script
+      #   run: |
+      #     echo "[+] Running the installer script..."
+      #     sudo su
+      #     bash ./installer.sh
+
+      # - name: Installer script result
+      #   run: |
+      #     echo "[+] The result of the installer script..."
+      #     bash ./installer.sh
 
       - name: Run After Script
         run: |
