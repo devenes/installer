@@ -1,6 +1,5 @@
 <div align="center" id="top"> 
   <img src="./.github/img.webp" alt="Installer" />
-
 </div>
 
 <h1 align="center">DevOps Installer</h1>
@@ -68,6 +67,14 @@ sudo bash installer.sh
 # Test the installation
 bash installer.sh
 ```
+
+## GitHub Actions CI
+
+You can use the GitHub Actions CI to test the installation of packages and applications.
+
+<div align="center"> 
+  <img src="./.github/test.png" alt="Installer" />
+</div>
 
 ## :memo: License
 
