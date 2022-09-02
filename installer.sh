@@ -22,10 +22,10 @@ packages=(
 )
 
 function installer() {
-  if ! [ -x "$(command -v $1)" ]; then
+  if ! [ -x "$(command -v "$1" > /dev/null 2>&1)" ]; then
       echo -e "${RED}[-] $1 is not installed.${NC}" >&2
       install_"$1"
-        if ! [ -x "$(command -v $1)" ]; then
+        if ! [ -x "$(command -v "$1" > /dev/null 2>&1)" ]; then
           echo -e "${RED}[-] $1 could not be installed.${NC}" >&2
         else
           echo -e "${GREEN}[+] $1 is installed.${NC}"
